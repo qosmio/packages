@@ -354,7 +354,7 @@ define Package/nginx-ssl/install
 	$(INSTALL_DIR) $(1)/etc/nginx/conf.d
 	$(INSTALL_DATA) $(addprefix $(PKG_INSTALL_DIR)/etc/nginx/,$(config_files)) $(1)/etc/nginx/
 	$(INSTALL_CONF) ./files/nginx.conf $(1)/etc/nginx/
-	$(INSTALL_CONF) ./files/_lan.conf $(1)/etc/nginx/conf.d/
+	#$(INSTALL_CONF) ./files/_lan.conf $(1)/etc/nginx/conf.d/
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/nginx.init $(1)/etc/init.d/nginx
 ifeq ($(CONFIG_NGINX_NAXSI),y)
@@ -364,7 +364,7 @@ ifeq ($(CONFIG_NGINX_NAXSI),y)
 endif
 	$(if $(CONFIG_NGINX_NAXSI),$($(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx))
 	$(if $(CONFIG_NGINX_NAXSI),$(chmod 0640 $(1)/etc/nginx/naxsi_core.rules))
-	$(INSTALL_CONF) ./files/_redirect2ssl.conf $(1)/etc/nginx/conf.d/
+	#$(INSTALL_CONF) ./files/_redirect2ssl.conf $(1)/etc/nginx/conf.d/
 ifneq ($(CONFIG_IPV6),y)
 	$(SED) '/listen\s*\[/d' $(1)/etc/nginx/conf.d/*.conf # without IPv6 [::]
 endif

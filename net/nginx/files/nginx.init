@@ -20,7 +20,7 @@ nginx_init() {
 	[ -d /var/log/nginx ] || mkdir -p /var/log/nginx
 	[ -d /var/lib/nginx ] || mkdir -p /var/lib/nginx
 
-	${NGINX_UTIL} init_lan
+	#${NGINX_UTIL} init_lan
 
 	CONF="${NGINX_CONF}"
 
