@@ -2,19 +2,22 @@
 # Copyright (C) 2015 OpenWrt.org
 
 START=80
-
+NICEPRIO=19
 USE_PROCD=1
 
 G_OPTS="daemon off;"
 
 NGINX_UTIL="/usr/bin/nginx-util"
 
-eval $("${NGINX_UTIL}" get_env)
-
 CONF=""
 
-
 nginx_init() {
+	if [ -r "${NGINX_UTIL}" ]; then
+		eval $("${NGINX_UTIL}" get_env)
+	else
+		logger -s -t "nginx" -p "daemon.err" "missing \"${NGINX_UTIL}\"!"
+	fi
+
 	[ -z "${CONF}" ] || return # already called.
 
 	[ -d /var/log/nginx ] || mkdir -p /var/log/nginx
@@ -46,6 +49,7 @@ start_service() {
 	procd_set_param stderr 1
 	procd_set_param file "${CONF}" "${CONF_DIR}*.crt" "${CONF_DIR}*.key" \
 		"${CONF_DIR}*.conf" "${CONF_DIR}*.locations"
+	procd_set_param nice "$NICEPRIO"
 	procd_set_param respawn
 	procd_close_instance
 }

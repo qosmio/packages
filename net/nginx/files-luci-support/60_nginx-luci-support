@@ -1,12 +1,12 @@
 #!/bin/sh
 
 if nginx -V 2>&1 | grep -q ubus; then
-	if [ -z "$(cat /etc/nginx/conf.d/luci.locations | grep ubus)" ]; then
-		cat <<EOT >> /etc/nginx/conf.d/luci.locations
+    if [ -z "$(cat /etc/nginx/conf.d/luci.locations | grep ubus)" ]; then
+        cat <<EOT >> /etc/nginx/conf.d/luci.locations
 
 location /ubus {
         ubus_interpreter;
-        ubus_socket_path /var/run/ubus.sock;
+        ubus_socket_path $(uci get rpcd.@rpcd[0].socket);
         ubus_parallel_req 2;
 }
 EOT
