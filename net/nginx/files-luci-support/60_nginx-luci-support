@@ -13,6 +13,9 @@ EOT
 	fi
 fi
 
+grep -q /var/run/ubus.sock /etc/nginx/conf.d/luci.locations &&
+	sed -i 's#/var/run/ubus.sock#/var/run/ubus/ubus.sock#' /etc/nginx/conf.d/luci.locations
+
 if [ -x /etc/init.d/uhttpd ]; then
         /etc/init.d/uhttpd disable
         if [ -n "$(pgrep uhttpd)" ]; then
