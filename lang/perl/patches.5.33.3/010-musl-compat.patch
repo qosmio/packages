@@ -1,6 +1,6 @@
 --- a/perl.c
 +++ b/perl.c
-@@ -289,7 +289,7 @@ perl_construct(pTHXx)
+@@ -284,7 +284,7 @@ perl_construct(pTHXx)
      PL_localpatches = local_patches;	/* For possible -v */
  #endif
  

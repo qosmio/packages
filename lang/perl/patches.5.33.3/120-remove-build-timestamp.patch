@@ -1,6 +1,6 @@
 --- a/perl.c
 +++ b/perl.c
-@@ -2058,16 +2058,6 @@ S_Internals_V(pTHX_ CV *cv)
+@@ -2039,16 +2039,6 @@ S_Internals_V(pTHX_ CV *cv)
      PUSHs(Perl_newSVpvn_flags(aTHX_ non_bincompat_options,
  			      sizeof(non_bincompat_options) - 1, SVs_TEMP));
  
