@@ -8,12 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython
-PKG_VERSION:=1.9.4
-PKG_RELEASE:=2
+PKG_VERSION:=1.14
+PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://github.com/micropython/micropython/releases/download/v$(PKG_VERSION)
-PKG_HASH:=0db042011bffcbd65362b67eb3cca87eaefa9f2a55b747fa75e922c706b8ce1a
+#PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/micropython/micropython
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_VERSION:=b0932fcf2e2f9a81abf7737ed4b2573bd9ad4a49
+PKG_HASH:=05f95682e7ddfb08c317e83826df9a1d636676f3
 
 PKG_MAINTAINER:=Roger D <rogerdammit@gmail.com>
 PKG_LICENSE:=MIT
@@ -41,7 +43,7 @@ endef
 MAKE_FLAGS += -C $(PKG_BUILD_DIR)/ports/unix FROZEN_MPY_DIR=
 
 define Build/Compile
-	$(call Build/Compile/Default,axtls)
+	+$(MAKE) -C $(PKG_BUILD_DIR)/mpy-cross
 	$(call Build/Compile/Default)
 
 endef
