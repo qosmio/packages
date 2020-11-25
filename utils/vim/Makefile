@@ -9,20 +9,21 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=vim
 PKG_VERSION:=8.2
-PKG_RELEASE:=2
+PKG_RELEASE:=2054
 VIMVER:=82
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_URL:=http://ftp.vim.org/pub/vim/unix
-PKG_HASH:=f087f821831b4fece16a0461d574ccd55a8279f64d635510a1e10225966ced3b
+PKG_SOURCE_URL:=https://github.com/vim/vim
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_VERSION:=d49a35a1c3b736637733b36011fccbee7ef43fcf
 PKG_MAINTAINER:=Marko Ratkaj <marko.ratkaj@sartura.hr>
 PKG_CPE_ID:=cpe:/a:vim:vim
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)$(VIMVER)
+#PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)$(VIMVER)
 PKG_BUILD_PARALLEL:=1
 
 HOST_BUILD_DEPENDS:=libiconv/host
-HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)$(VIMVER)
+#HOST_BUILD_DIR:=$(BUILD_DIR_HOST)/$(PKG_NAME)$(VIMVER)
 HOST_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -44,12 +45,14 @@ endef
 
 define Package/vim-full
   $(call Package/vim/Default)
+  DEPENDS+=+moonjit
   TITLE+= (Normal)
 endef
 
 
 define Package/vim-fuller
   $(call Package/vim/Default)
+  DEPENDS+=+moonjit
   TITLE+= (Big)
 endef
 
@@ -168,6 +171,8 @@ ifneq ($(CONFIG_PACKAGE_vim-full),)
 define Build/Compile/vim-full
 	$(call Build/Configure/Default, \
 		--with-features=normal \
+		--enable-luainterp=dynamic \
+		--with-luajit \
 	)
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		DESTDIR="$(PKG_INSTALL_DIR)" all
@@ -179,6 +184,8 @@ ifneq ($(CONFIG_PACKAGE_vim-fuller),)
 define Build/Compile/vim-fuller
 	$(call Build/Configure/Default, \
 		--with-features=big \
+		--enable-luainterp=dynamic \
+		--with-luajit \
 	)
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		DESTDIR="$(PKG_INSTALL_DIR)" all

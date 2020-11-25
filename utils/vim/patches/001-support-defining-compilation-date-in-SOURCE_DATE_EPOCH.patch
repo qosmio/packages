@@ -22,13 +22,11 @@ preprocessor's __DATE__/__TIME__ symbols will be used.
  src/version.c    |  8 ++++++++
  3 files changed, 21 insertions(+)
 
-diff --git a/src/config.h.in b/src/config.h.in
-index 5c8c7e5..436a0b7 100644
 --- a/src/config.h.in
 +++ b/src/config.h.in
-@@ -30,6 +30,9 @@
- /* Define when __DATE__ " " __TIME__ can be used */
- #undef HAVE_DATE_TIME
+@@ -33,6 +33,9 @@
+ /* Defined from $SOURCE_DATE_EPOCH, used as the build date */
+ #undef BUILD_DATE
  
 +/* Defined as the date of last modification */
 +#undef BUILD_DATE
@@ -36,12 +34,10 @@ index 5c8c7e5..436a0b7 100644
  /* Define when __attribute__((unused)) can be used */
  #undef HAVE_ATTRIBUTE_UNUSED
  
-diff --git a/src/configure.ac b/src/configure.ac
-index 8751b2e..cd43387 100644
 --- a/src/configure.ac
 +++ b/src/configure.ac
-@@ -62,6 +62,16 @@ if test x"$ac_cv_prog_cc_c99" != xno; then
-   fi
+@@ -74,6 +74,16 @@ if test -n "$SOURCE_DATE_EPOCH"; then
+   AC_SUBST(BUILD_DATE_MSG)
  fi
  
 +dnl If $SOURCE_DATE_EPOCH is present in the environment, use that as the
@@ -57,33 +53,3 @@ index 8751b2e..cd43387 100644
  dnl Check for the flag that fails if stuff are missing.
  
  AC_MSG_CHECKING(--enable-fail-if-missing argument)
-diff --git a/src/version.c b/src/version.c
-index c8361eb..e51c738 100644
---- a/src/version.c
-+++ b/src/version.c
-@@ -44,9 +44,13 @@ init_longVersion(void)
-      * VAX C can't concatenate strings in the preprocessor.
-      */
-     strcpy(longVersion, VIM_VERSION_LONG_DATE);
-+#ifdef BUILD_DATE
-+    strcat(longVersion, BUILD_DATE);
-+#else
-     strcat(longVersion, __DATE__);
-     strcat(longVersion, " ");
-     strcat(longVersion, __TIME__);
-+#endif
-     strcat(longVersion, ")");
- }
- 
-@@ -54,7 +58,11 @@ init_longVersion(void)
-     void
- init_longVersion(void)
- {
-+#ifdef BUILD_DATE
-+    char *date_time = BUILD_DATE;
-+#else
-     char *date_time = __DATE__ " " __TIME__;
-+#endif
-     char *msg = _("%s (%s, compiled %s)");
-     size_t len = strlen(msg)
- 		+ strlen(VIM_VERSION_LONG_ONLY)
