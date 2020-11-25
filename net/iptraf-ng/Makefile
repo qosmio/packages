@@ -8,12 +8,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=iptraf-ng
-PKG_VERSION:=1.1.4
+PKG_VERSION:=1.2.1
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://infrastructure.fedoraproject.org/infra/hosted-content/$(PKG_NAME)/$(PKG_NAME)
-PKG_HASH:=79140cf07c0cceb1b5723242847a73aa86f5e4f9dccfe8970fda6801d347eb09
+PKG_SOURCE_URL:=https://github.com/iptraf-ng/iptraf-ng
+PKG_SOURCE_PROTO:=git
+PKG_SOURCE_DATE:=2020-09-09
+PKG_SOURCE_VERSION:=5ec555e2bbe7e0a159bbc0dc7b8cba3f42256ccc
 
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -53,12 +54,11 @@ MAKE_FLAGS += \
 	CPPFLAGS="$(TARGET_CPPFLAGS) -D_GNU_SOURCE" \
 	NCURSES_CFLAGS="$(TARGET_CFLAGS)" \
 	NCURSES_LDFLAGS="$(TARGET_LDFLAGS) -lncurses -lpanel" \
-	iptraf-ng rvnamed-ng
+	iptraf-ng
 
 define Package/iptraf-ng/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/iptraf-ng $(1)/usr/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/rvnamed-ng $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,iptraf-ng))
