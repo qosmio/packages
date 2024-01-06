@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.25.2
-PKG_RELEASE:=2
+PKG_VERSION:=1.25.3
+PKG_RELEASE:=3
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=05dd6d9356d66a74e61035f2a42162f8c754c97cf1ba64e7a801ba158d6c0711
+PKG_HASH:=64c5b975ca287939e828303fa857d22f142b251f17808dfe41733512d9cded86
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Christian Marangi <ansuelsmth@gmail.com>
@@ -23,7 +23,7 @@ PKG_CPE_ID:=cpe:/a:nginx:nginx
 PKG_FIXUP:=autoreconf
 PKG_BUILD_PARALLEL:=1
 PKG_INSTALL:=1
-PKG_BUILD_FLAGS:=gc-sections
+PKG_BUILD_FLAGS:=gc-sections no-lto
 
 # 3rd-party modules
 PKG_MOD_EXTRA := \
@@ -203,9 +203,9 @@ define Package/nginx-mod-luci/install
 endef
 
 define Download/nginx-mod-geoip2
-  VERSION:=1cabd8a1f68ea3998f94e9f3504431970f848fbf
+  VERSION:=a607a41a8115fecfc05b5c283c81532a3d605425
   URL:=https://github.com/leev/ngx_http_geoip2_module.git
-  MIRROR_HASH:=b4bd8517f6595f28e9cea5370045df476e0f7fa9ca3611d71ba85c518f1a7eda
+  MIRROR_HASH:=83d9d01b963c205a9af0605008b7d35d8150f93e096db3818da9fd867a18e8a0
   PROTO:=git
 endef
 
@@ -237,9 +237,9 @@ define Package/nginx-mod-lua-resty-core/install
 endef
 
 define Download/nginx-mod-headers-more
-  VERSION:=bea1be3bbf6af28f6aa8cf0c01c07ee1637e2bd0
+  VERSION:=3fb97bcf57b17106ee68f47eb01233cd0eeb2d54
   URL:=https://github.com/openresty/headers-more-nginx-module.git
-  MIRROR_HASH:=3617bbf7a935208a1d8d5f86a8f9b770f6987e4d2b5663a9ab1b777217e3066b
+  MIRROR_HASH:=c482f5479f13f2ea5b80ebbbc12360e334f180c89e1002c0e98cc3619adeff23
   PROTO:=git
 endef
 
@@ -252,9 +252,9 @@ define Download/nginx-mod-brotli
 endef
 
 define Download/nginx-mod-rtmp
-  VERSION:=f0ea62342a4eca504b311cd5df910d026c3ea4cf
-  URL:=https://github.com/ut0mt8/nginx-rtmp-module.git
-  MIRROR_HASH:=d3f58066f0f858ed79f7f2b0c9b89de2ccc512c94ab3d0625f6dcff3df0b72c1
+  VERSION:=54029cea4a7892e723c89615eb961b6f3e8c71cc
+  URL:=https://github.com/pDonatas/nginx-rtmp-module.git
+  MIRROR_HASH:=7dfd1aac98f586ad8a06141910ff9ce4c2def8f5f43c9c37154ec2940f596fa7
   PROTO:=git
 endef
 
@@ -266,23 +266,23 @@ define Download/nginx-mod-ts
 endef
 
 define Download/nginx-mod-naxsi
-  VERSION:=d714f1636ea49a9a9f4f06dba14aee003e970834
-  URL:=https://github.com/nbs-system/naxsi.git
-  MIRROR_HASH:=bd006686721a68d43f052f0a4f00e9ff99fb2abfbc4dcf8194a3562fe4e5c08b
+  VERSION:=30ee67a8c462a8bdb2603022bcf7c29b2b3576ec
+  URL:=https://github.com/wargio/naxsi.git
+  MIRROR_HASH:=f61381eecb6125a744fb3f3c6d12f604e55450a17ac0bd294676b118bf43009c
   PROTO:=git
 endef
 
 define Download/nginx-mod-lua
-  VERSION:=c89469e920713d17d703a5f3736c9335edac22bf
+  VERSION:=ff96d75a49dd4bc9f3009332973f2b2cfc6326a3
   URL:=https://github.com/openresty/lua-nginx-module.git
-  MIRROR_HASH:=dd66465f65c094a1ddfff2035bff4da870b7c6b7e033d307a9806a6df290a1a5
+  MIRROR_HASH:=8b4067ceedfceae3e519124a28a52120ae4ddf5b87261bf601e8f39020117d35
   PROTO:=git
 endef
 
 define Download/nginx-mod-lua-resty-core
-  VERSION:=2e2b2adaa61719972fe4275fa4c3585daa0dcd84
+  VERSION:=50f73790b6bb1d83f52cb3b4ec7e4ab7f649ab32
   URL:=https://github.com/openresty/lua-resty-core.git
-  MIRROR_HASH:=4bfc267fd027161f88fcbeacce38e6bd13ba894a581c2d6dfe78ee270b1a473c
+  MIRROR_HASH:=f31f6cfc41ee9935022a849d79f5ea4f5cfa8c1e86acce26141e98614744806f
   PROTO:=git
 endef
 
@@ -296,7 +296,7 @@ endef
 define Download/nginx-mod-dav-ext
   VERSION:=f5e30888a256136d9c550bf1ada77d6ea78a48af
   URL:=https://github.com/arut/nginx-dav-ext-module.git
-  MIRROR_HASH:=70bb4c3907f4b783605500ba494e907aede11f8505702e370012abb3c177dc5b
+  MIRROR_HASH:=67512fb6503dc09c68016d2c1611b198e3f616b8acbae9028060f7be37528aa5
   PROTO:=git
 endef
 
@@ -318,7 +318,7 @@ $(foreach m,$(PKG_MOD_EXTRA),$(eval $(call Module/Download,$(m))))
 
 define Module/nginx-mod-naxsi/install
 	$(INSTALL_DIR) $(1)/etc/nginx
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_rules/naxsi_core.rules $(1)/etc/nginx
 endef
 
 define Quilt/Refresh/Package
@@ -411,6 +411,9 @@ CONFIGURE_ARGS += \
 	--without-http_upstream_zone_module \
 	--with-compat \
 	--with-http_ssl_module \
+	--with-pcre-jit \
+	--with-openssl-opt=enable-ktls \
+	--with-debug \
 	$(if $(call IsDisabled,NGINX_HTTP_CACHE),--without-http-cache) \
 	$(if $(call IsDisabled,NGINX_PCRE),--without-pcre) \
 	$(if $(call IsDisabled,NGINX_HTTP_CHARSET),--without-http_charset_module) \
