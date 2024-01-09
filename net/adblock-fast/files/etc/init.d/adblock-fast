@@ -49,7 +49,8 @@ readonly smartdnsNftsetCache="/var/run/${packageName}/smartdns.nftset.cache"
 readonly smartdnsNftsetConfig="/var/run/${packageName}/smartdns.nftset.conf"
 readonly smartdnsNftsetGzip="${packageName}.smartdns.nftset.gz"
 readonly smartdnsNftsetFilter=';'
-readonly unboundFile="/var/lib/unbound/adb_list.${packageName}"
+var_prefix=$(uci_get "$packageName" 'config' 'var_prefix')
+readonly unboundFile="${var_prefix%/}/var/lib/unbound/adb_list.${packageName}"
 readonly unboundCache="/var/run/${packageName}/unbound.cache"
 readonly unboundGzip="${packageName}.unbound.gz"
 readonly unboundFilter='s|^|local-zone: "|;s|$|" static|'
@@ -264,7 +265,7 @@ dns_set_output_values() {
 			outputFilter="$unboundFilter"
 			outputFile="$unboundFile"
 			outputCache="$unboundCache"
-			outputGzip="$unboundGzip"
+			outputGzip="${compressed_cache_dir}/${unboundGzip}"
 		;;
 	esac
 }
@@ -493,11 +494,11 @@ get_text() {
 	case "$1" in
 		errorConfigValidationFail) r="$packageName config validation failed";;
 		errorServiceDisabled) r="$packageName is currently disabled";;
-		errorNoDnsmasqIpset) 
+		errorNoDnsmasqIpset)
 			r="dnsmasq ipset support is enabled in $packageName, but dnsmasq is either not installed or installed dnsmasq does not support ipset";;
-		errorNoIpset) 
+		errorNoIpset)
 			r="dnsmasq ipset support is enabled in $packageName, but ipset is either not installed or installed ipset does not support 'hash:net' type";;
-		errorNoDnsmasqNftset) 
+		errorNoDnsmasqNftset)
 			r="dnsmasq nft set support is enabled in $packageName, but dnsmasq is either not installed or installed dnsmasq does not support nft set";;
 		errorNoNft) r="dnsmasq nft sets support is enabled in $packageName, but nft is not installed";;
 		errorNoWanGateway) r="The ${serviceName} failed to discover WAN gateway";;
@@ -755,7 +756,7 @@ load_environment() {
 	[ "$dns" = 'smartdns.domainset' ] || rm -f "$smartdnsDomainSetFile" "$smartdnsDomainSetCache" "${compressed_cache_dir}/${smartdnsDomainSetGzip}" "$smartdnsDomainSetConfig"
 	[ "$dns" = 'smartdns.ipset' ]     || rm -f "$smartdnsIpsetFile" "$smartdnsIpsetCache" "${compressed_cache_dir}/${smartdnsIpsetGzip}" "$smartdnsIpsetConfig"
 	[ "$dns" = 'smartdns.nftset' ]    || rm -f "$smartdnsNftsetFile" "$smartdnsNftsetCache" "${compressed_cache_dir}/${smartdnsNftsetGzip}" "$smartdnsNftsetConfig"
-	[ "$dns" = 'unbound.adb_list' ]   || rm -f "$unboundFile" "$unboundCache" "$unboundGzip"
+	[ "$dns" = 'unbound.adb_list' ]   || rm -f "$unboundFile" "$unboundCache" "${compressed_cache_dir}/${unboundGzip}"
 
 	for i in "$runningConfigFile" "$runningErrorFile" "$runningStatusFile" "$outputFile" "$outputCache" "$outputGzip" "$outputConfig"; do
 		[ -n "$i" ] || continue
@@ -819,7 +820,7 @@ load_environment() {
 	config_load "$packageName"
 	config_foreach append_url 'file_url'
 	load_environment_flag=1
-	cache 'test' && return 0 
+	cache 'test' && return 0
 	cache 'test_gzip' && return 0
 	if [ "$param" = 'on_boot' ]; then
 		load_network "$param"
@@ -881,7 +882,7 @@ resolver() {
 			;;
 		esac
 	}
-	
+
 	local param output_text i
 	case $1 in
 		cleanup)
@@ -951,14 +952,14 @@ resolver() {
 				;;
 			esac
 
-			if [ -n "$(uci_changes dhcp)" ]; then 
+			if [ -n "$(uci_changes dhcp)" ]; then
 				uci_commit 'dhcp'
 				if ! str_contains "$param" 'dnsmasq_restart'; then
 					param="${param:+"$param; dnsmasq_restart"}"
 					output_text="${output_text}/dnsmasq"
 				fi
 			fi
-			if [ -n "$(uci_changes smartdns)" ]; then 
+			if [ -n "$(uci_changes smartdns)" ]; then
 				uci_commit 'smartdns'
 				if ! str_contains "$param" 'smartdns_restart'; then
 					param="${param:+"$param; "}smartdns_restart"
@@ -972,7 +973,7 @@ resolver() {
 				json set status 'statusSuccess'
 				led_on "$led"
 				output_okn
-			else 
+			else
 				output_fail
 				json set status 'statusFail'
 				json add error 'errorDNSReload'
@@ -992,11 +993,11 @@ resolver() {
 					param='unbound_restart'
 				;;
 			esac
-			if [ -n "$(uci_changes dhcp)" ]; then 
+			if [ -n "$(uci_changes dhcp)" ]; then
 				uci_commit 'dhcp'
 				str_contains "$param" 'dnsmasq_restart' || param="${param:+"$param; dnsmasq_restart"}"
 			fi
-			if [ -n "$(uci_changes smartdns)" ]; then 
+			if [ -n "$(uci_changes smartdns)" ]; then
 				uci_commit 'smartdns'
 				str_contains "$param" 'smartdns_restart' || param="${param:+"$param; "}smartdns_restart"
 			fi
@@ -1160,7 +1161,7 @@ download_dnsmasq_file() {
 		output 3 'Low free memory, restarting resolver '
 		if resolver 'quiet_restart'; then
 			output_okn
-		else 
+		else
 			output_failn
 		fi
 	fi
@@ -1225,7 +1226,7 @@ download_lists() {
 		output 3 'Low free memory, restarting resolver '
 		if resolver 'quiet_restart'; then
 			output_okn
-		else 
+		else
 			output_failn
 		fi
 	fi
@@ -1235,7 +1236,7 @@ download_lists() {
 	config_load "$packageName"
 	config_foreach load_validate_file_url_section 'file_url' process_file_url_wrapper
 	wait
-	if [ -n "$(uci_changes "$packageName")" ]; then 
+	if [ -n "$(uci_changes "$packageName")" ]; then
 		output 2 "Saving updated file size(s) "
 		if uci_commit "$packageName"; then output_okn; else output_failn; fi
 	fi
@@ -1351,7 +1352,7 @@ $(sed '/^[[:space:]]*$/d' "$A_TMP")"
 		if sed "$outputFilter" "$B_TMP" > "$A_TMP"; then
 			output_ok
 		else
-			output_failn 
+			output_failn
 			json add error 'errorDataFileFormatting'
 		fi
 	else
@@ -1478,7 +1479,7 @@ adb_allow() {
 				allowed_domain="$(uci_get "$packageName" 'config' 'allowed_domain')"
 				config_cache 'create'
 				json set stats "$serviceName is blocking $(wc -l < "$outputFile") domains (with ${dns})"
-				output_ok; 
+				output_ok;
 				if [ "$dns" = 'dnsmasq.ipset' ]; then
 					output 2 "Flushing adb ipset "
 					if ipset -q -! flush adb; then output_ok; else output_fail; fi
@@ -1490,14 +1491,14 @@ adb_allow() {
 				fi
 				output 2 "Restarting dnsmasq "
 				if dnsmasq_restart; then output_okn; else output_failn; fi
-			else 
-				output_fail; 
+			else
+				output_fail;
 			fi
 		;;
 		smartdns.*)
 			output 1 "Allowing domain(s) and restarting smartdns "
 			output 2 "Allowing domain(s) \\n"
-			for c in $string; do 
+			for c in $string; do
 				output 2 "  $c "
 				hf="$(echo "$c" | sed 's/\./\\./g')"
 				if sed -i "\:\(\"\|\.\)${hf}\":d" "$outputFile" && \
@@ -1520,17 +1521,17 @@ adb_allow() {
 				allowed_domain="$(uci_get "$packageName" 'config' 'allowed_domain')"
 				config_cache 'create'
 				json set stats "$serviceName is blocking $(wc -l < "$outputFile") domains (with ${dns})"
-				output_ok; 
+				output_ok;
 				output 2 "Restarting Unbound "
 				if unbound_restart; then output_okn; else output_failn; fi
-			else 
-				output_fail; 
+			else
+				output_fail;
 			fi
 		;;
 		unbound.*)
 			output 1 "Allowing domain(s) and restarting Unbound "
 			output 2 "Allowing domain(s) \\n"
-			for c in $string; do 
+			for c in $string; do
 				output 2 "  $c "
 				hf="$(echo "$c" | sed 's/\./\\./g')"
 				if sed -i "\:\(\"\|\.\)${hf}\":d" "$outputFile" && \
@@ -1553,11 +1554,11 @@ adb_allow() {
 				allowed_domain="$(uci_get "$packageName" 'config' 'allowed_domain')"
 				config_cache 'create'
 				json set stats "$serviceName is blocking $(wc -l < "$outputFile") domains (with ${dns})"
-				output_ok; 
+				output_ok;
 				output 2 "Restarting Unbound "
 				if unbound_restart; then output_okn; else output_failn; fi
-			else 
-				output_fail; 
+			else
+				output_fail;
 			fi
 		;;
 	esac
@@ -1667,8 +1668,8 @@ adb_config_update() {
 	[ "$config_update_enabled" -ne '0' ] || return 0
 
 	if [ "$param" != 'download' ]; then
-		cache 'test' && return 0 
-		cache 'test_gzip' && return 0 
+		cache 'test' && return 0
+		cache 'test_gzip' && return 0
 	fi
 	output 1 'Updating config '
 	while [ -z "$R_TMP" ] || [ -e "$R_TMP" ]; do
@@ -1736,7 +1737,7 @@ adb_start() {
 		fi
 	elif [ "$action" = 'download' ] || [ "$param" = 'download' ] || [ -n "$error" ]; then
 		action='download'
-	elif [ ! -s "$outputFile" ]; then 
+	elif [ ! -s "$outputFile" ]; then
 		if cache 'test_gzip' || cache 'test'; then
 			action='restore'
 		else
@@ -1773,7 +1774,7 @@ adb_start() {
 		if cache 'test' && [ ! -s "$outputFile" ]; then
 			output 3 'Found cache file, reusing it '
 			json set message 'found cache file, reusing it.'
-			if cache 'restore'; then 
+			if cache 'restore'; then
 				output_okn
 				resolver 'on_start'
 			else
@@ -1942,7 +1943,7 @@ adb_status() {
 		output "$stats "; output_okn;
 	else
 		[ -n "$status" ] && status="$(get_text "$status")"
-		if [ -n "$status" ] && [ -n "$message" ]; then 
+		if [ -n "$status" ] && [ -n "$message" ]; then
 			status="${status}: $message"
 		fi
 		[ -n "$status" ] && output "$serviceName $status!\\n"
@@ -1980,7 +1981,7 @@ adb_stop() {
 			output 0 "$__OK__\\n"; output_okn;
 			json set status 'statusStopped'
 			json del message
-		else 
+		else
 			output 0 "$__FAIL__\\n"; output_fail;
 			json set status 'statusFail'
 			json add error 'errorStopping'
@@ -2061,7 +2062,7 @@ service_triggers() {
 	procd_add_config_trigger "config.change" "$packageName" "/etc/init.d/${packageName}" reload
 }
 sizes() { load_validate_config 'config' adb_sizes "''"; }
-start_service() { 
+start_service() {
 	load_validate_config 'config' adb_config_update "'$*'"
 	load_validate_config 'config' adb_start "'$*'"
 }
