@@ -20,12 +20,15 @@ PKG_MAINTAINER:=Toke Høiland-Jørgensen <toke@toke.dk>
 PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE.md
 
+PKG_CONFIG_DEPENDS:= \
+	CONFIG_LIBCURL_NOSSL
+
 include $(INCLUDE_DIR)/package.mk
 
 define Package/acme-acmesh
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+acme-common +wget-ssl +ca-bundle +openssl-util +socat
+  DEPENDS:=+acme-common +ca-bundle +openssl-util @(PACKAGE_curl||PACKAGE_wget-ssl) @PACKAGE_curl:(!LIBCURL_NOSSL)
   TITLE:=ACME client acme.sh wrapper script
   URL:=https://acme.sh
   PKGARCH:=all
