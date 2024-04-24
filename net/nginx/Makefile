@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.25.5
-PKG_RELEASE:=1
+PKG_VERSION:=1.25.4
+PKG_RELEASE:=4
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=2fe2294f8af4144e7e842eaea884182a84ee7970e11046ba98194400902bbec0
+PKG_HASH:=760729901acbaa517996e681ee6ea259032985e37c2768beef80df3a877deed9
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Christian Marangi <ansuelsmth@gmail.com>
@@ -198,8 +198,8 @@ endef
 define Package/nginx-mod-luci/preinst
 #!/bin/sh
 grep -r -l ngx_http_ubus_module.so /etc/nginx/module.d | grep -v ngx_http_ubus.module | while read file; do
-  echo "Removing old LuCI module load file for 'ngx_http_ubus.so' in $$file."
-  rm -f $$file
+	echo "Found old module for ubus in $$file, removing it."
+	rm -f $$file
 done
 exit 0
 endef
@@ -212,10 +212,10 @@ define Package/nginx-mod-luci/install
 endef
 
 define Download/nginx-mod-geoip2
-  SOURCE_DATE:=2020-01-22
-  VERSION:=1cabd8a1f68ea3998f94e9f3504431970f848fbf
+  SOURCE_DATE:=2024-04-02
+  VERSION:=445df24ef3781e488cee3dfe8a1e111997fc1dfe
   URL:=https://github.com/leev/ngx_http_geoip2_module.git
-  MIRROR_HASH:=f3d2a1af5c34812b5a34453457ba6a4d8093c92085aa7f76c46a1c4185c9735c
+  MIRROR_HASH:=22d67e35067faed200ea398581dd0dc9d599bc6ab4c0ea2034a1ea55666fdc1d
   PROTO:=git
 endef
 
@@ -247,10 +247,10 @@ define Package/nginx-mod-lua-resty-core/install
 endef
 
 define Download/nginx-mod-headers-more
-  SOURCE_DATE:=2022-07-17
-  VERSION:=bea1be3bbf6af28f6aa8cf0c01c07ee1637e2bd0
+  SOURCE_DATE:=2023-12-28
+  VERSION:=06dc0be56e5ec9f7fd814e881b066b5540a85bec
   URL:=https://github.com/openresty/headers-more-nginx-module.git
-  MIRROR_HASH:=569abadc137b5b52bdcc33b00aa21f6d266cb84fb891795da2c4e101c4898abe
+  MIRROR_HASH:=c31bdc7d372f1dc36df241ccc4b95e837078b17f81b89d3998e64f17ba7c8c30
   PROTO:=git
 endef
 
@@ -264,10 +264,10 @@ define Download/nginx-mod-brotli
 endef
 
 define Download/nginx-mod-rtmp
-  SOURCE_DATE:=2018-12-07
-  VERSION:=f0ea62342a4eca504b311cd5df910d026c3ea4cf
-  URL:=https://github.com/ut0mt8/nginx-rtmp-module.git
-  MIRROR_HASH:=9c98d886ae4ea3708bb0bca55f8df803418a407e0ffc6df56341bd76ad39cba8
+  SOURCE_DATE:=2023-11-14
+  VERSION:=54029cea4a7892e723c89615eb961b6f3e8c71cc
+  URL:=https://github.com/pDonatas/nginx-rtmp-module.git
+  MIRROR_HASH:=86b5837b6b8153293ce488cd98971e142135fb9b33e8634e5ece7fcad9e8433b
   PROTO:=git
 endef
 
@@ -280,34 +280,34 @@ define Download/nginx-mod-ts
 endef
 
 define Download/nginx-mod-naxsi
-  SOURCE_DATE:=2022-09-14
-  VERSION:=d714f1636ea49a9a9f4f06dba14aee003e970834
-  URL:=https://github.com/nbs-system/naxsi.git
-  MIRROR_HASH:=b0cef5fbf842f283eb5f0686ddd1afcd07d83abd7027c8cfb3e84a2223a34797
+  SOURCE_DATE:=2024-02-21
+  VERSION:=e1d060737378f2acd9ab09e6d6789b3f41afe1d6
+  URL:=https://github.com/wargio/naxsi.git
+  MIRROR_HASH:=4bba0ade135aa976b5360842fc3e12cb801084e7e85bc2f2cc99f28128be3313
   PROTO:=git
 endef
 
 define Download/nginx-mod-lua
-  SOURCE_DATE:=2023-08-19
-  VERSION:=c89469e920713d17d703a5f3736c9335edac22bf
+  SOURCE_DATE:=2024-04-11
+  VERSION:=6c00bd4765ec5f7bf090a2c6424d11845fc4ab72
   URL:=https://github.com/openresty/lua-nginx-module.git
-  MIRROR_HASH:=c3bdf1b23f0a63991b5dcbd1f8ee150e6f893b43278e8600e4e0bb42a6572db4
+  MIRROR_HASH:=ecd83a51a3189974a118debac4b9a9c215703bab735ab948abdc0b8f194a99fb
   PROTO:=git
 endef
 
 define Download/nginx-mod-lua-resty-core
-  SOURCE_DATE:=2023-09-09
-  VERSION:=2e2b2adaa61719972fe4275fa4c3585daa0dcd84
+  SOURCE_DATE:=2024-03-10
+  VERSION:=5ada3082bdc45c57a5f03381a4d6aeac3370b934
   URL:=https://github.com/openresty/lua-resty-core.git
-  MIRROR_HASH:=c5f3df92fd72eac5b54497c039aca0f0d9ea1d87223f1e3a54365ba565991874
+  MIRROR_HASH:=89bbc34dff0ea9423d1120cc07ee105beec4b53a05a48425bf909a2ac5c5ebc9
   PROTO:=git
 endef
 
 define Download/nginx-mod-lua-resty-lrucache
-  SOURCE_DATE:=2023-08-06
-  VERSION:=52f5d00403c8b7aa8a4d4f3779681976b10a18c1
+  SOURCE_DATE:=2024-03-18
+  VERSION:=82b5ab467aa46495db09499725eb87d4a7c1bc1c
   URL:=https://github.com/openresty/lua-resty-lrucache.git
-  MIRROR_HASH:=0833e0114948af4edb216c5c34b3f1919f534b298f4fa29739544f7c9bb8a08d
+  MIRROR_HASH:=02bab632b971d732a9b94678a3f0e81c1c9749f01b3419bb98a9ef27672f08e3
   PROTO:=git
 endef
 
@@ -326,19 +326,26 @@ define Download/nginx-mod-ubus
   MIRROR_HASH:=515bb9d355ad80916f594046a45c190a68fb6554d6795a54ca15cab8bdd12fda
   PROTO:=git
 endef
+# define Download/nginx-mod-ubus
+#   SOURCE_DATE:=2024-03-02
+#   VERSION:=564fa3e9c2b04ea298ea659b793480415da26415
+#   URL:=https://github.com/Ansuel/nginx-ubus-module.git
+#   MIRROR_HASH:=92c9ab94d88a2fe8d7d1e8a15d15cfc4d529fdc357ed96d22b65d5da3dd24d7f
+#   PROTO:=git
+# endef
 
 define Module/Download
   define Download/nginx-mod-$(1) +=
 
     SUBDIR:=nginx-mod-$(1)
-    FILE:=nginx-mod-$(1)-$$$$(subst -,.,$$$$(SOURCE_DATE))~$$$$(call version_abbrev,$$$$(VERSION)).tar.zst
+    FILE:=nginx-mod-$(1)$$$$(if $$$$(SOURCE_DATE),-$$$$(subst -,.,$$$$(SOURCE_DATE)),0)~$$$$(call version_abbrev,$$$$(VERSION)).tar.zst
   endef
 endef
 $(foreach m,$(PKG_MOD_EXTRA),$(eval $(call Module/Download,$(m))))
 
 define Module/nginx-mod-naxsi/install
 	$(INSTALL_DIR) $(1)/etc/nginx
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_config/naxsi_core.rules $(1)/etc/nginx
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/nginx-mod-naxsi/naxsi_rules/naxsi_core.rules $(1)/etc/nginx
 endef
 
 define Quilt/Refresh/Package
@@ -432,6 +439,9 @@ CONFIGURE_ARGS += \
 	--without-http_upstream_zone_module \
 	--with-compat \
 	--with-http_ssl_module \
+	--with-pcre-jit \
+	--with-openssl-opt=enable-ktls \
+	--with-debug \
 	$(if $(call IsDisabled,NGINX_HTTP_CACHE),--without-http-cache) \
 	$(if $(call IsDisabled,NGINX_PCRE),--without-pcre) \
 	$(if $(call IsDisabled,NGINX_HTTP_CHARSET),--without-http_charset_module) \
