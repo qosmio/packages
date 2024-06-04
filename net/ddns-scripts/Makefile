@@ -25,7 +25,6 @@ endef
 define Package/ddns-scripts
   $(call Package/ddns-scripts/Default)
   TITLE:=Dynamic DNS Client scripts (with IPv6 support)
-  DEPENDS:=+ddns-scripts-services
 endef
 
 define Package/ddns-scripts/description
@@ -81,7 +80,7 @@ endef
 define Package/ddns-scripts-cloudflare
   $(call Package/ddns-scripts/Default)
   TITLE:=Extension for cloudflare.com API v4
-  DEPENDS:=ddns-scripts +curl
+  DEPENDS:=ddns-scripts +curl +@LIBCURL_PROXY +@LIBCURL_HTTP
   PROVIDES:=ddns-scripts_cloudflare.com-v4
 endef
 
