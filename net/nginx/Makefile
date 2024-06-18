@@ -8,12 +8,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=nginx
-PKG_VERSION:=1.25.5
-PKG_RELEASE:=3
+PKG_VERSION:=1.26.1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=nginx-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://nginx.org/download/
-PKG_HASH:=760729901acbaa517996e681ee6ea259032985e37c2768beef80df3a877deed9
+PKG_HASH:=f9187468ff2eb159260bfd53867c25ff8e334726237acf227b9e870e53d3e36b
 
 PKG_MAINTAINER:=Thomas Heil <heil@terminal-consulting.de> \
 				Christian Marangi <ansuelsmth@gmail.com>
@@ -197,7 +197,7 @@ endef
 
 define Package/nginx-mod-luci/preinst
 #!/bin/sh
-grep -r -l ngx_http_ubus_module.so /etc/nginx/module.d | grep -v ngx_http_ubus.module | while read file; do
+grep -r -l ngx_http_ubus_module.so $${IPKG_INSTROOT}/etc/nginx/module.d | grep -v ngx_http_ubus.module | while read file; do
 	echo "Found old module for ubus in $$file, removing it."
 	rm -f $$file
 done
@@ -232,18 +232,18 @@ define Package/nginx-mod-lua-resty-core
 endef
 
 define Package/nginx-mod-lua-resty-lrucache/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/resty/lrucache
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-lrucache/lib/resty/*.lua $(1)/usr/lib/lua/resty
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-lrucache/lib/resty/lrucache/*.lua $(1)/usr/lib/lua/resty/lrucache
+	$(INSTALL_DIR) $(1)/usr/share/lua/resty/lrucache
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-lrucache/lib/resty/*.lua $(1)/usr/share/lua/resty
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-lrucache/lib/resty/lrucache/*.lua $(1)/usr/share/lua/resty/lrucache
 endef
 
 define Package/nginx-mod-lua-resty-core/install
-	$(INSTALL_DIR) $(1)/usr/lib/lua/ngx/ssl
-	$(INSTALL_DIR) $(1)/usr/lib/lua/resty/core
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/ngx/*.lua $(1)/usr/lib/lua/ngx
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/ngx/ssl/*.lua $(1)/usr/lib/lua/ngx/ssl
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/resty/*.lua $(1)/usr/lib/lua/resty
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/resty/core/*.lua $(1)/usr/lib/lua/resty/core
+	$(INSTALL_DIR) $(1)/usr/share/lua/ngx/ssl
+	$(INSTALL_DIR) $(1)/usr/share/lua/resty/core
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/ngx/*.lua $(1)/usr/share/lua/ngx
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/ngx/ssl/*.lua $(1)/usr/share/lua/ngx/ssl
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/resty/*.lua $(1)/usr/share/lua/resty
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/nginx-mod-lua-resty-core/lib/resty/core/*.lua $(1)/usr/share/lua/resty/core
 endef
 
 define Download/nginx-mod-headers-more
