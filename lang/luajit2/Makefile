@@ -1,18 +1,20 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luajit2
-PKG_VERSION:=2.1-20240626
+PKG_VERSION:=2.1-20240815
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/openresty/luajit2/archive/refs/tags/v$(PKG_VERSION).tar.gz?
-PKG_HASH:=1e53822a1105df216b9657ccb0293a152ac5afd875abc848453bfa353ca8181b
+PKG_HASH:=9e59ec13c301c8b2855838b1248def49ef348a3e7563fabef677431706718145
 
 PKG_MAINTAINER:=Javier Marcet <javier@marcet.info>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=COPYRIGHT
 
 PKG_BUILD_FLAGS:=no-mips16
+PKG_BUILD_PARALLEL:=1
+HOST_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/host-build.mk
@@ -42,7 +44,7 @@ ifeq ($(HOST_ARCH),$(filter $(HOST_ARCH), x86_64 mips64))
 endif
 
 define Build/Compile
-	$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
+	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		HOST_CC="$(HOSTCC) $(HOST_CFLAGS) $(HOST_BITS)" \
 		CROSS="$(TARGET_CROSS)" \
 		DPREFIX=$(PKG_INSTALL_DIR)/usr \
@@ -52,7 +54,7 @@ define Build/Compile
 		BUILDMODE=dynamic
 	$(RM) -rf $(PKG_INSTALL_DIR)
 	mkdir -p $(PKG_INSTALL_DIR)
-	$(MAKE) -C $(PKG_BUILD_DIR) \
+	+$(MAKE) -C $(PKG_BUILD_DIR) \
 		DPREFIX=$(PKG_INSTALL_DIR)/usr \
 		PREFIX=/usr \
 		TARGET_SYS=Linux \
@@ -77,15 +79,21 @@ define Package/luajit2/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/luajit-* $(1)/usr/bin/$(PKG_NAME)
 endef
 
+define Host/Configure
+	$(SED) 's,LUA_LROOT.*/usr,LUA_LROOT \"$(STAGING_DIR_HOSTPKG),' $(HOST_BUILD_DIR)/src/luaconf.h
+	$(SED) 's,LUA_LUADIR.*"/lua/",LUA_LUADIR	"/lua/5.1/",' $(HOST_BUILD_DIR)/src/luaconf.h
+endef
+
 define Host/Compile
-	$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) \
+	+$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) \
 		DPREFIX=$(STAGING_DIR_HOSTPKG) \
+		PREFIX=$(STAGING_DIR_HOSTPKG) \
 		TARGET_CFLAGS="$(HOST_CFLAGS)" \
 		TARGET_LDFLAGS="$(HOST_LDFLAGS)"
 endef
 
 define Host/Install
-	$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) \
+	+$(MAKE) $(HOST_JOBS) -C $(HOST_BUILD_DIR) \
 		DPREFIX=$(STAGING_DIR_HOSTPKG) \
 		install
 	$(CP) $(STAGING_DIR_HOSTPKG)/bin/luajit-* $(STAGING_DIR_HOSTPKG)/bin/$(PKG_NAME)
