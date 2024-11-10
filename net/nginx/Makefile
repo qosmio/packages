@@ -212,9 +212,8 @@ define Package/nginx-mod-luci/install
 endef
 
 define Download/nginx-mod-geoip2
-  SOURCE_DATE:=2024-04-02
-  VERSION:=445df24ef3781e488cee3dfe8a1e111997fc1dfe
-  URL:=https://github.com/leev/ngx_http_geoip2_module.git
+  VERSION:=3.4
+  URL:=https://github.com/leev/ngx_http_geoip2_module
   MIRROR_HASH:=22d67e35067faed200ea398581dd0dc9d599bc6ab4c0ea2034a1ea55666fdc1d
   PROTO:=git
 endef
