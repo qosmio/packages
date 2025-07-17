@@ -52,8 +52,6 @@ MESON_ARGS += \
 	-Ddb=db \
 	-Dxauth=disabled
 
-ifneq ($(CONFIG_PACKAGE_libpam),)
-
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include
 	$(INSTALL_DIR) $(1)/usr/lib
@@ -74,16 +72,5 @@ define Package/libpam/install
 	$(INSTALL_DIR) $(1)/usr/lib/pkgconfig
 	$(INSTALL_DATA) $(PKG_INSTALL_DIR)/usr/lib/pkgconfig/*.pc $(1)/usr/lib/pkgconfig/
 endef
-else
-
-define Build/Compile
-	:
-endef
-
-define Build/Install
-	:
-endef
-
-endif
 
 $(eval $(call BuildPackage,libpam))
